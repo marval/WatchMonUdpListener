@@ -130,6 +130,7 @@ console.log('Batrium logger started');
 
 // Function to load in all parsers from the payload folder. Those not able to load will be discarded during startup. 
 var messages = {};
+var everyNth = {};
 require("fs").readdirSync(normalizedPath).forEach(function(file) {
   try {
 
@@ -159,14 +160,27 @@ server.on('message',function(msg,info){
   if(payload.MessageId in messages) {
     // If error in message lets try/catch it so we dont rage quit
     try {
-      obj = Object.assign(payload, eval(messages[payload.MessageId])(msg)); 
-      if (debug) console.log(obj);	
-      // check if the message id is present in the config. This dont care what version is there if file exist
-      if (config[messageID] && config[messageID].mqtt || config.all.mqtt) sendMqtt(payload.SystemId,payload.MessageId,obj);
-      if (config[messageID] && config[messageID].influx || config.all.influx) sendInflux(obj, tag);
-       // Below is used if you use messageid and version in the configuration file	
-      if (config[payload.MessageId] && config[payload.MessageId].mqtt || config.all.mqtt) sendMqtt(payload.SystemId,payload.MessageId,obj);
-      if (config[payload.MessageId] && config[payload.MessageId].influx || config.all.influx) sendInflux(obj, tag);
+      //handle everyNth
+      if (!everyNth[messageID])
+      {
+        console.log('Creating everyNth for ' + messageID);
+        everyNth[messageID] = 0;
+      }
+      everyNth[messageID]++;
+
+      if(everyNth[messageID] && everyNth[messageID] == config[messageID].everyNth)
+      {
+        console.log('everyNth for ' + messageID + ' is ' + everyNth[messageID]);
+        everyNth[messageID] = 0;
+        obj = Object.assign(payload, eval(messages[payload.MessageId])(msg));
+        if (debug) console.log(obj);
+        // check if the message id is present in the config. This dont care what version is there if file exist
+        if (config[messageID] && config[messageID].mqtt || config.all.mqtt) sendMqtt(payload.SystemId, payload.MessageId, obj);
+        if (config[messageID] && config[messageID].influx || config.all.influx) sendInflux(obj, tag);
+        // Below is used if you use messageid and version in the configuration file	
+        if (config[payload.MessageId] && config[payload.MessageId].mqtt || config.all.mqtt) sendMqtt(payload.SystemId, payload.MessageId, obj);
+        if (config[payload.MessageId] && config[payload.MessageId].influx || config.all.influx) sendInflux(obj, tag);
+      }      
     } catch (e) {
       errorText('Couldnt get payload for ' + payload.MessageId + ' Size: %s',msg.length);
       console.log(e);

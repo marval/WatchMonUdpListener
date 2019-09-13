@@ -163,13 +163,11 @@ server.on('message',function(msg,info){
       //handle everyNth
       if (!everyNth[messageID])
       {
-        console.log('Creating everyNth for ' + messageID);
         everyNth[messageID] = 0;
       }
       everyNth[messageID]++;
       if (config[messageID] && everyNth[messageID] && (!config[messageID].everyNth || everyNth[messageID] == config[messageID].everyNth))
       {
-        console.log('everyNth for ' + messageID + ' is ' + everyNth[messageID]);
         everyNth[messageID] = 0;
         obj = Object.assign(payload, eval(messages[payload.MessageId])(msg));
         if (debug) console.log(obj);

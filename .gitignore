@@ -60,3 +60,5 @@ typings/
 .env
 
 .vscode/settings.json
+
+dist/

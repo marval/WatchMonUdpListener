@@ -167,8 +167,8 @@ server.on('message',function(msg,info){
         everyNth[messageID] = 0;
       }
       everyNth[messageID]++;
-
-      if (everyNth[messageID] && (!config[messageID].everyNth || everyNth[messageID] == config[messageID].everyNth))
+      console.log(config[messageID]);
+      if (config[messageID] && everyNth[messageID] && (!config[messageID].everyNth || everyNth[messageID] == config[messageID].everyNth))
       {
         console.log('everyNth for ' + messageID + ' is ' + everyNth[messageID]);
         everyNth[messageID] = 0;

@@ -166,16 +166,19 @@ server.on('message',function(msg,info){
         everyNth[messageID] = 0;
       }
       everyNth[messageID]++;
+
+      //always send MQTT if configured
+      if (config[messageID] && config[messageID].mqtt || config.all.mqtt) sendMqtt(payload.SystemId, payload.MessageId, obj);
+      if (config[payload.MessageId] && config[payload.MessageId].mqtt || config.all.mqtt) sendMqtt(payload.SystemId, payload.MessageId, obj);
+
       if (config[messageID] && everyNth[messageID] && (!config[messageID].everyNth || everyNth[messageID] == config[messageID].everyNth))
       {
         everyNth[messageID] = 0;
         obj = Object.assign(payload, eval(messages[payload.MessageId])(msg));
         if (debug) console.log(obj);
         // check if the message id is present in the config. This dont care what version is there if file exist
-        if (config[messageID] && config[messageID].mqtt || config.all.mqtt) sendMqtt(payload.SystemId, payload.MessageId, obj);
         if (config[messageID] && config[messageID].influx || config.all.influx) sendInflux(obj, tag);
         // Below is used if you use messageid and version in the configuration file	
-        if (config[payload.MessageId] && config[payload.MessageId].mqtt || config.all.mqtt) sendMqtt(payload.SystemId, payload.MessageId, obj);
         if (config[payload.MessageId] && config[payload.MessageId].influx || config.all.influx) sendInflux(obj, tag);
       }      
     } catch (e) {

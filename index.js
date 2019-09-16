@@ -168,6 +168,7 @@ server.on('message',function(msg,info){
       everyNth[messageID]++;
 
       //always send MQTT if configured
+      obj = Object.assign(payload, eval(messages[payload.MessageId])(msg));
       if (config[messageID] && config[messageID].mqtt || config.all.mqtt) sendMqtt(payload.SystemId, payload.MessageId, obj);
       if (config[payload.MessageId] && config[payload.MessageId].mqtt || config.all.mqtt) sendMqtt(payload.SystemId, payload.MessageId, obj);
 

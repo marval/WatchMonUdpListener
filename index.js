@@ -102,10 +102,10 @@ function sendEmonCms(data) {
   var emonObj = {
     payload: data
   };
-  console.log(emonObj);
-  /*emoncmsClient.post(data).catch(function (err) {
+  //console.log(emonObj);
+  emoncmsClient.post(data).catch(function (err) {
     console.log('[ERROR] EmonCMS: ' + err)
-  });*/
+  });
 };
 
 

@@ -91,11 +91,16 @@ function sendMqtt(SystemId,MessageId,data) {
 
 // Function to send data to EmonCMS database
 // Input is the data in Json format
-function sendEmonCms(data, tag) {
+function sendEmonCms(data) {
+  var tag = config[data.MessageId].tag ? config[data.MessageId].tag: 'generic';
   emoncmsClient.nodegroup = emoncmsNodeGroup + '_' + tag;
-  emoncmsClient.post(data).catch(function (err) {
+  var emonObj = {
+    payload: data
+  };
+  console.log(emonObj);
+  /*emoncmsClient.post(data).catch(function (err) {
     console.log('[ERROR] EmonCMS: ' + err)
-  });
+  });*/
 };
 
 
@@ -196,10 +201,10 @@ server.on('message',function(msg,info){
         if (debug) console.log(obj);
         // check if the message id is present in the config. This dont care what version is there if file exist
         if (config[messageID] && config[messageID].influx || config.all.influx) sendInflux(obj, tag);
-        if (config[messageID] && config[messageID].emoncms || config.all.emoncms) sendEmonCms(obj, tag);
+        if (config[messageID] && config[messageID].emoncms || config.all.emoncms) sendEmonCms(obj);
         // Below is used if you use messageid and version in the configuration file	
         if (config[payload.MessageId] && config[payload.MessageId].influx || config.all.influx) sendInflux(obj, tag);
-        if (config[payload.MessageId] && config[payload.MessageId].emoncms || config.all.emoncms) sendEmonCms(obj, tag);
+        if (config[payload.MessageId] && config[payload.MessageId].emoncms || config.all.emoncms) sendEmonCms(obj);
       }      
     } catch (e) {
       errorText('Couldnt get payload for ' + payload.MessageId + ' Size: %s',msg.length);

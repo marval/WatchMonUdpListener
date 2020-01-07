@@ -103,7 +103,7 @@ function sendEmonCms(data) {
     payload: data
   };
   //console.log(emonObj);
-  emoncmsClient.post(demonObjata).catch(function (err) {
+  emoncmsClient.post(emonObj).catch(function (err) {
     console.log('[ERROR] EmonCMS: ' + err)
   });
 };

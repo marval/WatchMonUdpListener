@@ -92,7 +92,7 @@ function sendMqtt(SystemId,MessageId,data) {
 // Function to send data to EmonCMS database
 // Input is the data in Json format
 function sendEmonCms(data) {
-  var tag = config[data.MessageId].tag ? config[data.MessageId].tag: 'generic';
+  var tag = 'generic';//config[data.MessageId].tag ? config[data.MessageId].tag: 'generic';
   emoncmsClient.nodegroup = emoncmsNodeGroup + '_' + tag;
   delete data.first;
   delete data.MessageId;

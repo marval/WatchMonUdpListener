@@ -67,3 +67,4 @@ dist/
 .Dockerfile.swp
 .dockerignore
 
+package-lock.json

@@ -12,6 +12,7 @@ var server = udp.createSocket('udp4');
 var Parser = require('binary-parser').Parser;
 const Influx = require('influx');
 var fs = require('fs');
+var EmonCMS = require('emoncms');
 
 
 
@@ -31,7 +32,11 @@ var mqtthost = (config.config.mqtthost) ? config.config.mqtthost : 'localhost';
 var mqttusername = (config.config.mqttusername) ? config.config.mqttusername : '';
 var mqttpassword = (config.config.mqttpassword) ? config.config.mqttpassword : '';
 var influxhost = (config.config.influxhost) ? config.config.influxhost :'localhost';
-var influxdatabase = (config.config.influxdatabase) ? config.config.influxdatabase :'localhost';
+var influxdatabase = (config.config.influxdatabase) ? config.config.influxdatabase : 'localhost';
+var emoncmsUrl = (config.config.emoncmsUrl) ? config.config.emoncmsUrl : 'http://emoncms.org';
+var emoncmsApiKey = (config.config.emoncmsApiKey) ? config.config.emoncmsApiKey : 'access';
+var emoncmsNodeGroup = (config.config.emoncmsNodeGroup) ? config.config.emoncmsNodeGroup : 'Batrium';
+var emoncmsDataType = (config.config.emoncmsDataType) ? config.config.emoncmsDataType : 'fulljson';
 
 //Setup MQTT
 options={
@@ -41,6 +46,9 @@ options={
   clean:true};
 
 var client  = mqtt.connect('mqtt://' + mqtthost, options)
+
+var emoncmsClient = new EmonCMS(emoncmsApiKey, emoncmsUrl);
+emoncmsClient.datatype = emoncmsDataType;
 
 const influx = new Influx.InfluxDB({
   host: influxhost,
@@ -80,6 +88,15 @@ function sendMqtt(SystemId,MessageId,data) {
   client.publish('Batrium/' + SystemId + '/' + MessageId , JSON.stringify(data));		
   if (debugMQTT) console.log('Data sent to MQTT: Batrium/' + SystemId + '/' + MessageId);
 }
+
+// Function to send data to EmonCMS database
+// Input is the data in Json format
+function sendEmonCms(data, tag) {
+  emoncmsClient.nodegroup = emoncmsNodeGroup + '_' + tag;
+  emoncmsClient.post(data).catch(function (err) {
+    console.log('[ERROR] EmonCMS: ' + err)
+  });
+};
 
 
 // Function to send data to influx database
@@ -179,8 +196,10 @@ server.on('message',function(msg,info){
         if (debug) console.log(obj);
         // check if the message id is present in the config. This dont care what version is there if file exist
         if (config[messageID] && config[messageID].influx || config.all.influx) sendInflux(obj, tag);
+        if (config[messageID] && config[messageID].emoncms || config.all.emoncms) sendEmonCms(obj, tag);
         // Below is used if you use messageid and version in the configuration file	
         if (config[payload.MessageId] && config[payload.MessageId].influx || config.all.influx) sendInflux(obj, tag);
+        if (config[payload.MessageId] && config[payload.MessageId].emoncms || config.all.emoncms) sendEmonCms(obj, tag);
       }      
     } catch (e) {
       errorText('Couldnt get payload for ' + payload.MessageId + ' Size: %s',msg.length);

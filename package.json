@@ -25,6 +25,7 @@
   "license": "MIT",
   "dependencies": {
     "binary-parser": "latest",
+    "emoncms": "^1.0.0",
     "influx": "latest",
     "mqtt": "latest",
     "nodemon": "^1.19.2"

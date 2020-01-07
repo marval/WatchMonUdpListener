@@ -62,3 +62,9 @@ typings/
 .vscode/settings.json
 
 dist/
+
+.Dock.swp
+.Dockerfile.swp
+.dockerignore
+
+package-lock.json

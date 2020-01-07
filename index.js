@@ -94,6 +94,11 @@ function sendMqtt(SystemId,MessageId,data) {
 function sendEmonCms(data) {
   var tag = config[data.MessageId].tag ? config[data.MessageId].tag: 'generic';
   emoncmsClient.nodegroup = emoncmsNodeGroup + '_' + tag;
+  delete data.first;
+  delete data.MessageId;
+  delete data.nd;
+  delete data.SystemId;
+  delete data.hubId;
   var emonObj = {
     payload: data
   };

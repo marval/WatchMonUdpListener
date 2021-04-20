@@ -1,7 +1,6 @@
-﻿module.exports = function () {
-  var Parser = require('binary-parser').Parser;
+const Parser = require('binary-parser').Parser;
 
-  // Category    = Aggregated telemetry
+// Category    = Aggregated telemetry
   // Object      = CtrlLogic
   // Description = Combined status - Control logic
   // MsgLength   = 79
@@ -9,7 +8,6 @@
   // Frequency   = 2 seconds
   // Support     = Current
   // Valid to    = SW 1.0.29
-  this.parse_4732 = function (msg) {
 
     var status = new Parser()
       .skip(8)
@@ -91,6 +89,7 @@
       .uint8('hasCoolCellTempHi ')                    // Boolean 0 = Off , 1 = On
       .uint8('hasChargeBypassSessionLo ')    // Boolean 0 = Off , 1 = On
 
-    return status.parse(msg);
-  }
+module.exports = function(msg)
+{
+	return status.parse(msg);
 }

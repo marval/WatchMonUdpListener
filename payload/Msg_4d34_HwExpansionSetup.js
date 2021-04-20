@@ -1,7 +1,4 @@
-﻿module.exports = function() 
-{ 
-	var Parser = require('binary-parser').Parser;
-	
+const Parser = require('binary-parser').Parser;	
 	// Category    = Hardware Configuration
 	// Object      = Expansion
 	// MsgLength   = 32
@@ -10,9 +7,7 @@
 	// Frequency   = 20 seconds
 	// Support     = Current
 	// Valid to    = SW 1.0.29
-	this.parse_4d34 = function(msg) 
-	{
-		var status = new Parser()
+	const status = new Parser()
 		.skip(8)
 		.uint8('HwExpansionSetupVers')  
 		.uint8('HwExpansionTemplate')  /* ExtensionTemplateOptions
@@ -66,7 +61,7 @@
 		.uint8('HwExpansionInputAIN2') 
 		.int16le('HwExpansionCustomFeature1')
 		.int16le('HwExpansionCustomFeature2')
-
-		return status.parse(msg);
-	}
+module.exports = function(msg)
+{
+	return status.parse(msg);
 }

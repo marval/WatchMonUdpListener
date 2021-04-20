@@ -1,7 +1,4 @@
-﻿module.exports = function() 
-{ 
-	var Parser = require('binary-parser').Parser;
-
+const Parser = require('binary-parser').Parser;
 	// Category    = Aggregated telemetry
 	// Object      = Communication
 	// MsgLength   = 33
@@ -10,9 +7,7 @@
 	// Frequency   = 2 seconds
 	// Support     = Current
 	// Created     = SW 1.0.29
-	this.parse_6132 = function(msg) 
-	{
-		var status = new Parser()
+	const status = new Parser()
 		.skip(8)
 		.uint32le('SystemTime') // Epoch
 		.uint8('SystemOpStatus') /* Choices
@@ -96,7 +91,7 @@
 			.uint8('CmuOpStatus') /* Choices */
 			.uint8('CmuTxCmdTicks')
 			.uint8('CmuRxCmdTicks')
-		
-		return status.parse(msg);
-	}
-}
+module.exports = function(msg)
+{
+	return status.parse(msg);
+}	
